@@ -25,13 +25,13 @@ Verify the domain is available before proceeding.
 Either create a new contact:
 \`\`\`
 contact_create(
-  name: "Max Mustermann",
-  street: "Musterstraße 1",
-  city: "Berlin",
-  pc: "10115",
-  cc: "DE",
-  voice: "+49.301234567",
-  email: "max@example.de"
+  name: "John Doe",
+  street: "123 Main Street",
+  city: "New York",
+  pc: "10001",
+  cc: "US",
+  voice: "+1.2125551234",
+  email: "john@example.com"
 )
 \`\`\`
 Or list existing contacts to get an ID:
@@ -75,8 +75,8 @@ dns_create(
 - **Nameservers**: Minimum 2 required. Use INWX nameservers (ns.inwx.de, ns2.inwx.de, ns3.inwx.eu) or your own.
 - **DNS Zone**: Must be created separately after domain registration if you want to manage DNS at INWX.
 - **Contact Roles**: ICANN requires 4 contact roles (registrant=owner, admin, tech, billing). For most cases, use the same contact ID for all.
-- **Phone Format**: International format with dot: +49.301234567
-- **Country Code**: ISO 3166-1 alpha-2 (e.g., DE, AT, CH)
+- **Phone Format**: International format with dot: +1.2125551234
+- **Country Code**: ISO 3166-1 alpha-2 (e.g., US, DE, GB)
 - **Period**: Registration years (1-10), defaults to 1`,
         },
       },
@@ -105,13 +105,13 @@ Request the authorization code (also called EPP code or transfer key) from your 
 ### 2. Create or Find a Contact
 \`\`\`
 contact_create(
-  name: "Max Mustermann",
-  street: "Musterstraße 1",
-  city: "Berlin",
-  pc: "10115",
-  cc: "DE",
-  voice: "+49.301234567",
-  email: "max@example.de"
+  name: "John Doe",
+  street: "123 Main Street",
+  city: "New York",
+  pc: "10001",
+  cc: "US",
+  voice: "+1.2125551234",
+  email: "john@example.com"
 )
 \`\`\`
 

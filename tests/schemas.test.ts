@@ -202,12 +202,12 @@ describe('Contact Schemas', () => {
   describe('ContactCreateSchema', () => {
     const validContact = {
       name: 'John Doe',
-      street: 'Main Street 1',
-      city: 'Berlin',
-      pc: '10115',
-      cc: 'DE',
-      voice: '+49.301234567',
-      email: 'john@example.de',
+      street: '123 Main Street',
+      city: 'New York',
+      pc: '10001',
+      cc: 'US',
+      voice: '+1.2125551234',
+      email: 'john@example.com',
     };
 
     test('accepts valid contact', () => {
@@ -250,7 +250,7 @@ describe('Contact Schemas', () => {
     });
 
     test('accepts partial update', () => {
-      const result = ContactUpdateSchema.safeParse({ id: 123, email: 'new@example.de' });
+      const result = ContactUpdateSchema.safeParse({ id: 123, email: 'new@example.com' });
       expect(result.success).toBe(true);
     });
 

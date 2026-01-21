@@ -41,12 +41,12 @@ describe.skipIf(!hasCredentials)('Domain Lifecycle (OTE)', () => {
     const response = await client.call<{ id: number }>('contact.create', {
       type: 'PERSON',
       name: 'Lifecycle Test User',
-      street: 'Teststraße 1',
-      city: 'Berlin',
-      pc: '10115',
-      cc: 'DE',
-      voice: '+49.301234567',
-      email: `lifecycle-${testId}@example.de`,
+      street: '123 Test Street',
+      city: 'New York',
+      pc: '10001',
+      cc: 'US',
+      voice: '+1.2125551234',
+      email: `lifecycle-${testId}@example.com`,
     });
 
     expect(response.code).toBe(1000);

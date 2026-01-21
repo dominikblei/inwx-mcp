@@ -47,12 +47,12 @@ describe.skipIf(!hasCredentials)('Integration Tests (OTE)', () => {
       const response = await client.call<{ id: number }>('contact.create', {
         type: 'PERSON',
         name: 'Test User',
-        street: 'Teststraße 1',
-        city: 'Berlin',
-        pc: '10115',
-        cc: 'DE',
-        voice: '+49.301234567',
-        email: `test-${Date.now()}@example.de`,
+        street: '123 Test Street',
+        city: 'New York',
+        pc: '10001',
+        cc: 'US',
+        voice: '+1.2125551234',
+        email: `test-${Date.now()}@example.com`,
       });
       expect(response.code).toBe(1000);
       expect(response.resData?.id).toBeDefined();
@@ -80,7 +80,7 @@ describe.skipIf(!hasCredentials)('Integration Tests (OTE)', () => {
       }
       const response = await client.call('contact.update', {
         id: createdContactId,
-        street: 'Neue Straße 2',
+        street: '456 Oak Avenue',
       });
       expect(response.code).toBe(1000);
     });

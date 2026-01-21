@@ -123,7 +123,7 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 
 ```
 1. Check availability: domain_check(domain: "example.de")
-2. Create contact: contact_create(name: "Max Mustermann", ...)
+2. Create contact: contact_create(name: "John Doe", ...)
 3. Register: domain_create(domain: "example.de", registrant: 123, ...)
 4. Create DNS zone: dns_zone_create(domain: "example.de")
 5. Add DNS record: dns_create(domain: "example.de", type: "A", name: "@", content: "1.2.3.4")
