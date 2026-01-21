@@ -56,9 +56,11 @@ INWX_SHARED_SECRET=secret     # Only if 2FA is enabled
 > - OTE: Register at https://ote.inwx.de (free testing)
 > - Live: Register at https://www.inwx.de (real money!)
 
-### Claude Desktop Configuration
+### MCP Client Configuration
 
-Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+This server works with any MCP-compatible client (Claude Desktop, Cursor, Windsurf, OpenAI Codex, etc.). See the [official MCP documentation](https://modelcontextprotocol.io) for client-specific setup instructions.
+
+**Example configuration:**
 
 ```json
 {
