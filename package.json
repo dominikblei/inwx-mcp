@@ -1,0 +1,51 @@
+{
+  "name": "inwx-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for INWX domain registrar - register, manage, and configure domains via AI",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "inwx-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target node",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "inwx",
+    "domain",
+    "registrar",
+    "dns",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dominikblei/inwx-mcp.git"
+  },
+  "homepage": "https://github.com/dominikblei/inwx-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/dominikblei/inwx-mcp/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.3",
+    "domrobot-client": "^3.3.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^22.0.0",
+    "prettier": "^3.8.0",
+    "typescript": "^5.0.0"
+  }
+}
