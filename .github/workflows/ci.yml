@@ -36,15 +36,8 @@ jobs:
         if: env.INWX_USERNAME != ''
         run: bun test tests/integration.test.ts
 
-      - name: Run lifecycle tests
-        env:
-          INWX_USERNAME: ${{ secrets.INWX_OTE_USERNAME }}
-          INWX_PASSWORD: ${{ secrets.INWX_OTE_PASSWORD }}
-          INWX_ENVIRONMENT: ote
-        if: env.INWX_USERNAME != ''
-        run: |
-          bun test tests/lifecycle.test.ts
-          bun test tests/lifecycle-com.test.ts
+      # Lifecycle tests are skipped in CI - they register/delete real domains
+      # Run manually: bun test tests/lifecycle.test.ts tests/lifecycle-com.test.ts
 
   lint:
     runs-on: ubuntu-latest
