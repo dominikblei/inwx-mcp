@@ -9,6 +9,16 @@ export interface InwxResponse<T = unknown> {
   resData?: T;
 }
 
+// INWX's JSON-RPC transport marshals XML-RPC dateTime.iso8601 values (used
+// for fields like created/updated/exDate) as an object instead of a plain
+// string, e.g.:
+// { scalar: '2026-12-14T08:20:04+00:00', xmlrpc_type: 'datetime', timestamp: 1797236404 }
+export interface InwxDateTime {
+  scalar: string;
+  xmlrpc_type: string;
+  timestamp: number;
+}
+
 // Domain Check Response
 export interface DomainCheckResult {
   domain: string;
@@ -28,9 +38,9 @@ export interface DomainInfo {
   tech: number;
   billing: number;
   ns: string[];
-  created: string;
-  updated: string;
-  exDate: string;
+  created: string | InwxDateTime;
+  updated: string | InwxDateTime;
+  exDate: string | InwxDateTime;
 }
 
 // DNS Record
