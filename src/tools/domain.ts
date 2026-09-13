@@ -10,6 +10,7 @@ import {
   DomainTransferSchema,
   type DomainCheckResult,
   type DomainInfo,
+  type InwxDateTime,
   type ToolResult,
 } from '../types/index.ts';
 
@@ -19,6 +20,20 @@ function success(text: string): ToolResult {
 
 function error(text: string): ToolResult {
   return { content: [{ type: 'text', text }], isError: true };
+}
+
+// INWX's JSON-RPC transport marshals XML-RPC dateTime.iso8601 values as
+// { scalar: '2026-12-14T08:20:04+00:00', xmlrpc_type: 'datetime', timestamp: 1797236404 }
+// instead of a plain string, even though the API docs (and this project's
+// own types) describe fields like exDate/created/updated as strings.
+// Interpolating such a value directly (`${d.exDate}`) prints "[object Object]".
+function formatInwxDate(value: unknown): string {
+  if (value === null || value === undefined) return 'unknown';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object' && 'scalar' in (value as Record<string, unknown>)) {
+    return String((value as { scalar: unknown }).scalar);
+  }
+  return String(value);
 }
 
 export function registerDomainTools(server: McpServer) {
@@ -85,7 +100,7 @@ export function registerDomainTools(server: McpServer) {
       }
 
       const list = domains
-        .map((d) => `- ${d.domain} (expires: ${d.exDate}, status: ${d.status})`)
+        .map((d) => `- ${d.domain} (expires: ${formatInwxDate(d.exDate)}, status: ${d.status})`)
         .join('\n');
 
       return success(`Found ${count} domain(s):\n\n${list}`);
@@ -120,9 +135,9 @@ export function registerDomainTools(server: McpServer) {
       const text = [
         `Domain: ${info.domain}`,
         `Status: ${info.status}`,
-        `Created: ${info.created}`,
-        `Updated: ${info.updated}`,
-        `Expires: ${info.exDate}`,
+        `Created: ${formatInwxDate(info.created)}`,
+        `Updated: ${formatInwxDate(info.updated)}`,
+        `Expires: ${formatInwxDate(info.exDate)}`,
         `Nameservers: ${info.ns?.join(', ') ?? 'none'}`,
         `Registrant Contact ID: ${info.registrant}`,
         `Admin Contact ID: ${info.admin}`,
@@ -180,7 +195,7 @@ export function registerDomainTools(server: McpServer) {
       }
 
       const client = getInwxClient();
-      const response = await client.call<{ price: number; exDate: string }>('domain.renew', {
+      const response = await client.call<{ price: number; exDate: string | InwxDateTime }>('domain.renew', {
         domain: parsed.data.domain,
         period: parsed.data.period,
       });
@@ -191,7 +206,7 @@ export function registerDomainTools(server: McpServer) {
 
       return success(
         `Domain "${parsed.data.domain}" renewed successfully.\n` +
-          `New expiry date: ${response.resData?.exDate ?? 'unknown'}\n` +
+          `New expiry date: ${formatInwxDate(response.resData?.exDate)}\n` +
           `Price: ${response.resData?.price ?? 'unknown'}`
       );
     }
