@@ -5,6 +5,7 @@ import { registerDomainTools } from './tools/domain.ts';
 import { registerDnsTools } from './tools/dns.ts';
 import { registerContactTools } from './tools/contact.ts';
 import { registerAccountTools } from './tools/account.ts';
+import { registerRenewalTools } from './tools/renewal.ts';
 import { registerPrompts } from './prompts.ts';
 
 const server = new McpServer({
@@ -17,6 +18,7 @@ registerDomainTools(server);
 registerDnsTools(server);
 registerContactTools(server);
 registerAccountTools(server);
+registerRenewalTools(server);
 
 // Register prompts
 registerPrompts(server);

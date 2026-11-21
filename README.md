@@ -87,6 +87,8 @@ This server works with any MCP-compatible client (Claude Desktop, Cursor, Windsu
 | `domain_check` | Check domain availability |
 | `domain_list` | List all domains in your account |
 | `domain_info` | Get domain details |
+| `domain_renewal_status` | Read renewal mode, period and renewal/expiry/scheduled dates |
+| `domain_renewal_prices` | Read TLD renewal tariffs (not a domain-specific quote) |
 | `domain_create` | Register a new domain |
 | `domain_renew` | Renew domain registration |
 | `domain_transfer` | Transfer domain to INWX |
@@ -117,7 +119,43 @@ This server works with any MCP-compatible client (Claude Desktop, Cursor, Windsu
 
 | Tool | Description |
 |------|-------------|
-| `account_info` | Get account balance and info |
+| `account_info` | Get safe account identifiers, email, currency and VAT |
+| `account_balance` | Get available/locked deposit, total received payments and credit limit |
+
+### Read-only account and renewal inspection
+
+These tools return allowlisted JSON in both text and MCP `structuredContent`.
+Missing or unexpected field types are reported as `"unknown"`, not zero. No raw
+account/domain response, service PIN, bank details or domain auth code is returned.
+The rest of this server still exposes write tools; read-only annotations are not
+an authorization boundary.
+
+- `account_info({})` uses [`account.info`](https://account.inwx.com/en/help/apidoc/f/ch02.html#account.info):
+  `customerNo` (not `customer`), `vat` (not `vatPercent`), and `currency`.
+  This method does **not** return a balance.
+- `account_balance({})` uses [`accounting.accountBalance`](https://account.inwx.com/en/help/apidoc/f/ch02s02.html#accounting.accountBalance),
+  with no parameters: `total` means accumulated received payments, not available funds;
+  `available`, `locked` and `creditLimit` are separate values. The response has no
+  documented currency; obtain that separately from `account_info`. No currency is assumed.
+- `domain_renewal_status({"domain":"example.de"})` uses
+  [`domain.info`](https://account.inwx.com/en/help/apidoc/f/ch02s09.html#domain.info):
+  `renewalMode` (`AUTORENEW`, `AUTODELETE`, `AUTOEXPIRE`), `period`, `reDate`, `exDate`, `scDate`, `status`.
+  Settings and dates do not prove payment, a completed renewal, or guaranteed future renewal.
+- `domain_renewal_prices({"tld":"de","vat":true})` uses
+  [`domain.getPrices`](https://account.inwx.com/en/help/apidoc/f/ch02s09.html#domain.getPrices),
+  passing `tld: ["de"]` and explicit `vat` (default `true`). It selects only the
+  matching row from `resData.price`, returning `renewalPrice` (per year), optional
+  `monthlyRenewalPrice`, `renewalPeriod` (years), `currency` and `vat`.
+  These are current TLD tariffs, not an exact bill: premium domains, promotions,
+  trustee services and later price changes can differ. Do not multiply an annual
+  price by an assumed period or conclude that the deposit covers every renewal.
+
+The official API also documents `domain.getdomainprice` with a domain array,
+`pricetype: "renewal"` and an optional period. It is deliberately not exposed here:
+its per-domain result container needs a sanitized schema confirmation before an
+exact domain quote can be safely presented. No undocumented `account.getBalance`
+method is used. All fixtures are synthetic examples of the documented field
+contracts, not captured account responses.
 
 ## Usage Examples
 
@@ -172,6 +210,7 @@ Tests run against the INWX OTE (sandbox) environment:
 ```bash
 # Unit tests (no credentials needed)
 bun test tests/schemas.test.ts
+bun test tests/read-tools.test.ts
 
 # Integration tests (requires OTE credentials)
 bun test tests/integration.test.ts
