@@ -1,55 +1,54 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { getInwxClient } from '../client/inwx.ts';
-import { AccountInfoSchema, type ToolResult } from '../types/index.ts';
-
-function success(text: string): ToolResult {
-  return { content: [{ type: 'text', text }] };
-}
-
-function error(text: string): ToolResult {
-  return { content: [{ type: 'text', text }], isError: true };
-}
-
-interface AccountInfo {
-  customer: string;
-  email: string;
-  balance: number;
-  currency: string;
-  vatPercent: number;
-}
+import { AccountInfoSchema } from '../types/index.ts';
+import { error, number, record, success, text } from './read-output.ts';
 
 export function registerAccountTools(server: McpServer) {
-  // account_info
-  server.tool(
+  server.registerTool(
     'account_info',
-    'Get account information including balance',
-    AccountInfoSchema.shape,
-    async (params) => {
-      const parsed = AccountInfoSchema.safeParse(params);
-      if (!parsed.success) {
-        return error(`Invalid input: ${parsed.error.issues[0]?.message}`);
-      }
+    {
+      description: 'Get safe account details. Balance is available separately via account_balance.',
+      inputSchema: AccountInfoSchema.shape,
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true },
+    },
+    async () => {
+      const response = await getInwxClient().call('account.info', {});
+      if (response.code !== 1000) return error(response.code);
+      if (!response.resData) return error();
+      const info = record(response.resData);
+      return success({
+        accountId: number(info['accountId']),
+        customerId: number(info['customerId']),
+        customerNo: number(info['customerNo']),
+        username: text(info['username']),
+        email: text(info['email']),
+        currency: text(info['currency']),
+        vat: number(info['vat']),
+      });
+    }
+  );
 
-      const client = getInwxClient();
-      const response = await client.call<AccountInfo>('account.info', {});
-
-      if (response.code !== 1000) {
-        return error(`INWX error: ${response.msg} (code: ${response.code})`);
-      }
-
-      const info = response.resData;
-      if (!info) {
-        return error('No account info returned from INWX');
-      }
-
-      const text = [
-        `Customer: ${info.customer}`,
-        `Email: ${info.email}`,
-        `Balance: ${info.balance} ${info.currency}`,
-        `VAT: ${info.vatPercent}%`,
-      ].join('\n');
-
-      return success(text);
+  server.registerTool(
+    'account_balance',
+    {
+      description:
+        'Read accounting.accountBalance: total received payments, available and locked deposit, credit limit. Currency is not returned by this method; use account_info. No payments or top-ups.',
+      inputSchema: AccountInfoSchema.shape,
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true },
+    },
+    async () => {
+      const response = await getInwxClient().call('accounting.accountBalance', {});
+      if (response.code !== 1000) return error(response.code);
+      if (!response.resData) return error();
+      const info = record(response.resData);
+      return success({
+        total: number(info['total']),
+        available: number(info['available']),
+        locked: number(info['locked']),
+        creditLimit: number(info['creditLimit']),
+        currency: 'unknown',
+        currencySource: 'account_info.currency',
+      });
     }
   );
 }
